@@ -317,8 +317,8 @@ contract usingOraclize {
     }
 
     function oraclize_setNetwork(uint8 _networkID) internal returns (bool _networkSet) {
+      _networkID; // silence the warning and remain backwards compatible
       return oraclize_setNetwork();
-    //   _networkID; // silence the warning and remain backwards compatible
     }
 
     function oraclize_setNetworkName(string memory _network_name) internal {
@@ -365,13 +365,13 @@ contract usingOraclize {
         return false;
     }
 
-    function __callback(bytes32 _myid, string memory _result) public {
+    function __callback(bytes32 _myid, string memory _result) public pure {
         __callback(_myid, _result, new bytes(0));
     }
 
-    function __callback(bytes32 _myid, string memory _result, bytes memory _proof) public {
+    function __callback(bytes32 _myid, string memory _result, bytes memory _proof) public pure {
+      _myid; _result; _proof; // Silence compiler warnings
       return;
-    //   _myid; _result; _proof; // Silence compiler warnings
     }
 
     function oraclize_getPrice(string memory _datasource) oraclizeAPI internal returns (uint _queryPrice) {
@@ -1052,6 +1052,35 @@ contract usingOraclize {
         }
         return string(bstr);
     }
+
+function uint2strNew(
+  uint256 _i
+)
+  internal
+  pure
+  returns (string memory str)
+{
+  if (_i == 0)
+  {
+    return "0";
+  }
+  uint256 j = _i;
+  uint256 length;
+  while (j != 0)
+  {
+    length++;
+    j /= 10;
+  }
+  bytes memory bstr = new bytes(length);
+  uint256 k = length;
+  j = _i;
+  while (j != 0)
+  {
+    bstr[--k] = bytes1(uint8(48 + j % 10));
+    j /= 10;
+  }
+  str = string(bstr);
+}
 
     function stra2cbor(string[] memory _arr) internal pure returns (bytes memory _cborEncoding) {
         safeMemoryCleaner();

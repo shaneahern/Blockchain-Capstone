@@ -5,3 +5,119 @@
 
     
 // Test verification with incorrect proof
+
+var SquareVerifier = artifacts.require('SquareVerifier');
+
+contract('TestSquareVerifier', () => {
+
+    const correctProofData = {
+        "proof": {
+          "a": [
+            "0x13aadb0ccdcf502d093fb9844daa62abc20d19a16881cd68472deda8f45899b3",
+            "0x01ddd63bcc550d4d936c4649d92f6612259ba5d70f48ed96a24c725e692e0f5b"
+          ],
+          "b": [
+            [
+              "0x20583d924bddddcfefc6f94713bcee7521873f26dc0b95280f4927b5eb24e8bc",
+              "0x305a952fd8dedbaa9ed02799fd641a03a2b82102c42bff733a51e3487d609365"
+            ],
+            [
+              "0x2c08f3d72f1733521d92076083d94603ba01c942db7596caeeb8b99521d237cb",
+              "0x2f02f43e82263f951223fa372323fdbfb3f5ac3ac675e1192c28c69f23aac6c4"
+            ]
+          ],
+          "c": [
+            "0x225d2f6ebba7f11de351e265db73048f0a3aeac8f24327d839c0de551953b186",
+            "0x044f88b0d50cd978d66548fa9c3e61e10f7fb11a1c53aef4249f233f696cfced"
+          ]
+        },
+        "inputs": [
+          "0x0000000000000000000000000000000000000000000000000000000000000009",
+          "0x0000000000000000000000000000000000000000000000000000000000000001"
+        ]
+      };
+
+      const correctProofDataIncorrectInputs = {
+        "proof": {
+          "a": [
+            "0x13aadb0ccdcf502d093fb9844daa62abc20d19a16881cd68472deda8f45899b3",
+            "0x01ddd63bcc550d4d936c4649d92f6612259ba5d70f48ed96a24c725e692e0f5b"
+          ],
+          "b": [
+            [
+              "0x20583d924bddddcfefc6f94713bcee7521873f26dc0b95280f4927b5eb24e8bc",
+              "0x305a952fd8dedbaa9ed02799fd641a03a2b82102c42bff733a51e3487d609365"
+            ],
+            [
+              "0x2c08f3d72f1733521d92076083d94603ba01c942db7596caeeb8b99521d237cb",
+              "0x2f02f43e82263f951223fa372323fdbfb3f5ac3ac675e1192c28c69f23aac6c4"
+            ]
+          ],
+          "c": [
+            "0x225d2f6ebba7f11de351e265db73048f0a3aeac8f24327d839c0de551953b186",
+            "0x044f88b0d50cd978d66548fa9c3e61e10f7fb11a1c53aef4249f233f696cfced"
+          ]
+        },
+        "inputs": [
+          "0x0000000000000000000000000000000000000000000000000000000000000008",
+          "0x0000000000000000000000000000000000000000000000000000000000000001"
+        ]
+      };
+
+      const incorrectProofData = {
+        "proof": {
+          "a": [
+            "0x0",
+            "0x13aadb0ccdcf502d093fb9844daa62abc20d19a16881cd68472deda8f45899b3"
+          ],
+          "b": [
+            [
+              "0x20583d924bddddcfefc6f94713bcee7521873f26dc0b95280f4927b5eb24e8bc",
+              "0x305a952fd8dedbaa9ed02799fd641a03a2b82102c42bff733a51e3487d609365"
+            ],
+            [
+              "0x2c08f3d72f1733521d92076083d94603ba01c942db7596caeeb8b99521d237cb",
+              "0x2f02f43e82263f951223fa372323fdbfb3f5ac3ac675e1192c28c69f23aac6c4"
+            ]
+          ],
+          "c": [
+            "0x225d2f6ebba7f11de351e265db73048f0a3aeac8f24327d839c0de551953b186",
+            "0x044f88b0d50cd978d66548fa9c3e61e10f7fb11a1c53aef4249f233f696cfced"
+          ]
+        },
+        "inputs": [
+          "0x0000000000000000000000000000000000000000000000000000000000000009",
+          "0x0000000000000000000000000000000000000000000000000000000000000001"
+        ]
+      };
+
+    describe('match SquareVerifier spec', function () {
+        beforeEach(async function () { 
+            this.contract = await SquareVerifier.new();
+
+        })
+
+        it('should verify correctProofData', async function () {
+            const verified = await this.contract.verifyTx(correctProofData.proof, correctProofData.inputs);
+            assert(verified === true, 'should verify incorrectProofData');
+        })
+
+        it('should not verify correctProofDataIncorrectInputs', async function () {
+            const verified = await this.contract.verifyTx(correctProofDataIncorrectInputs.proof, correctProofDataIncorrectInputs.inputs);
+            assert(verified === false, 'should not verify correctProofDataIncorrectInputs');
+        })
+
+        it('should not verify incorrectProofData', async function () {
+            let verified = false;
+            try {
+                verified = await this.contract.verifyTx(incorrectProofData.proof, incorrectProofData.inputs);
+            }
+            catch (error) {
+                // threw Error, so test succeeded.
+                verified = false;
+            }
+            assert(verified === false, 'should not verify incorrectProofData');
+        })
+
+    });
+})
